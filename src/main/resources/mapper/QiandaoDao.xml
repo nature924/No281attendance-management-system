@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.QiandaoDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yuangong_id as yuangongId
+        ,a.qiandao_shangban_time as qiandaoShangbanTime
+        ,a.qiandao_shangban_types as qiandaoShangbanTypes
+        ,a.qiandao_xiaban_time as qiandaoXiabanTime
+        ,a.qiandao_xiaban_types as qiandaoXiabanTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.QiandaoView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,yuangong.yuangong_uuid_number as yuangongUuidNumber
+        ,yuangong.yuangong_name as yuangongName
+        ,yuangong.yuangong_phone as yuangongPhone
+        ,yuangong.yuangong_id_number as yuangongIdNumber
+        ,yuangong.yuangong_photo as yuangongPhoto
+        ,yuangong.yuangong_email as yuangongEmail
+        ,yuangong.bumen_types as bumenTypes
+        ,yuangong.zhiwei_types as zhiweiTypes
+        ,yuangong.jinyong_types as jinyongTypes
+
+        FROM qiandao  a
+        left JOIN yuangong yuangong ON a.yuangong_id = yuangong.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.yuangongId != null and params.yuangongId != ''">
+                and (
+                    a.yuangong_id = #{params.yuangongId}
+                )
+            </if>
+            <if test=" params.qiandaoShangbanTimeStart != '' and params.qiandaoShangbanTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.qiandao_shangban_time) >= UNIX_TIMESTAMP(#{params.qiandaoShangbanTimeStart}) ]]>
+            </if>
+            <if test=" params.qiandaoShangbanTimeEnd != '' and params.qiandaoShangbanTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.qiandao_shangban_time) <= UNIX_TIMESTAMP(#{params.qiandaoShangbanTimeEnd}) ]]>
+            </if>
+            <if test="params.qiandaoShangbanTime != null and params.qiandaoShangbanTime != ''">
+                and a.qiandao_shangban_time = #{params.qiandaoShangbanTime}
+            </if>
+            <if test="params.qiandaoShangbanTypes != null and params.qiandaoShangbanTypes != ''">
+                and a.qiandao_shangban_types = #{params.qiandaoShangbanTypes}
+            </if>
+            <if test=" params.qiandaoXiabanTimeStart != '' and params.qiandaoXiabanTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.qiandao_xiaban_time) >= UNIX_TIMESTAMP(#{params.qiandaoXiabanTimeStart}) ]]>
+            </if>
+            <if test=" params.qiandaoXiabanTimeEnd != '' and params.qiandaoXiabanTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.qiandao_xiaban_time) <= UNIX_TIMESTAMP(#{params.qiandaoXiabanTimeEnd}) ]]>
+            </if>
+            <if test="params.qiandaoXiabanTime != null and params.qiandaoXiabanTime != ''">
+                and a.qiandao_xiaban_time = #{params.qiandaoXiabanTime}
+            </if>
+            <if test="params.qiandaoXiabanTypes != null and params.qiandaoXiabanTypes != ''">
+                and a.qiandao_xiaban_types = #{params.qiandaoXiabanTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断员工的id不为空 -->
+            <if test=" params.yuangongIdNotNull != '' and params.yuangongIdNotNull != null and params.yuangongIdNotNull != 'null' ">
+                and a.yuangong_id IS NOT NULL
+            </if>
+            <if test=" params.yuangongUuidNumber != '' and params.yuangongUuidNumber != null and params.yuangongUuidNumber != 'null' ">
+                and yuangong.yuangong_uuid_number like CONCAT('%',#{params.yuangongUuidNumber},'%')
+            </if>
+            <if test=" params.yuangongName != '' and params.yuangongName != null and params.yuangongName != 'null' ">
+                and yuangong.yuangong_name like CONCAT('%',#{params.yuangongName},'%')
+            </if>
+            <if test=" params.yuangongPhone != '' and params.yuangongPhone != null and params.yuangongPhone != 'null' ">
+                and yuangong.yuangong_phone like CONCAT('%',#{params.yuangongPhone},'%')
+            </if>
+            <if test=" params.yuangongIdNumber != '' and params.yuangongIdNumber != null and params.yuangongIdNumber != 'null' ">
+                and yuangong.yuangong_id_number like CONCAT('%',#{params.yuangongIdNumber},'%')
+            </if>
+            <if test=" params.yuangongEmail != '' and params.yuangongEmail != null and params.yuangongEmail != 'null' ">
+                and yuangong.yuangong_email like CONCAT('%',#{params.yuangongEmail},'%')
+            </if>
+            <if test="params.bumenTypes != null  and params.bumenTypes != ''">
+                and yuangong.bumen_types = #{params.bumenTypes}
+            </if>
+
+            <if test="params.zhiweiTypes != null  and params.zhiweiTypes != ''">
+                and yuangong.zhiwei_types = #{params.zhiweiTypes}
+            </if>
+
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and yuangong.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

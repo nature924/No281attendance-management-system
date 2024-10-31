@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DanganDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.dangan_uuid_number as danganUuidNumber
+        ,a.dangan_name as danganName
+        ,a.dangan_phone as danganPhone
+        ,a.dangan_id_number as danganIdNumber
+        ,a.dangan_photo as danganPhoto
+        ,a.dangan_chusheng as danganChusheng
+        ,a.dangan_file as danganFile
+        ,a.sex_types as sexTypes
+        ,a.dangan_email as danganEmail
+        ,a.ruzhi_time as ruzhiTime
+        ,a.dangan_xueli_content as danganXueliContent
+        ,a.dangan_shixi_content as danganShixiContent
+        ,a.dangan_gongzuo_content as danganGongzuoContent
+        ,a.dangan_beizhu_content as danganBeizhuContent
+        ,a.insert_time as insertTime
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.DanganView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM dangan  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.danganUuidNumber != '' and params.danganUuidNumber != null and params.danganUuidNumber != 'null' ">
+                and a.dangan_uuid_number like CONCAT('%',#{params.danganUuidNumber},'%')
+            </if>
+            <if test=" params.danganName != '' and params.danganName != null and params.danganName != 'null' ">
+                and a.dangan_name like CONCAT('%',#{params.danganName},'%')
+            </if>
+            <if test=" params.danganPhone != '' and params.danganPhone != null and params.danganPhone != 'null' ">
+                and a.dangan_phone like CONCAT('%',#{params.danganPhone},'%')
+            </if>
+            <if test=" params.danganIdNumber != '' and params.danganIdNumber != null and params.danganIdNumber != 'null' ">
+                and a.dangan_id_number like CONCAT('%',#{params.danganIdNumber},'%')
+            </if>
+            <if test=" params.danganChusheng != '' and params.danganChusheng != null and params.danganChusheng != 'null' ">
+                and a.dangan_chusheng like CONCAT('%',#{params.danganChusheng},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.danganEmail != '' and params.danganEmail != null and params.danganEmail != 'null' ">
+                and a.dangan_email like CONCAT('%',#{params.danganEmail},'%')
+            </if>
+            <if test=" params.ruzhiTimeStart != '' and params.ruzhiTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.ruzhi_time) >= UNIX_TIMESTAMP(#{params.ruzhiTimeStart}) ]]>
+            </if>
+            <if test=" params.ruzhiTimeEnd != '' and params.ruzhiTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.ruzhi_time) <= UNIX_TIMESTAMP(#{params.ruzhiTimeEnd}) ]]>
+            </if>
+            <if test="params.ruzhiTime != null and params.ruzhiTime != ''">
+                and a.ruzhi_time = #{params.ruzhiTime}
+            </if>
+            <if test=" params.danganXueliContent != '' and params.danganXueliContent != null and params.danganXueliContent != 'null' ">
+                and a.dangan_xueli_content like CONCAT('%',#{params.danganXueliContent},'%')
+            </if>
+            <if test=" params.danganShixiContent != '' and params.danganShixiContent != null and params.danganShixiContent != 'null' ">
+                and a.dangan_shixi_content like CONCAT('%',#{params.danganShixiContent},'%')
+            </if>
+            <if test=" params.danganGongzuoContent != '' and params.danganGongzuoContent != null and params.danganGongzuoContent != 'null' ">
+                and a.dangan_gongzuo_content like CONCAT('%',#{params.danganGongzuoContent},'%')
+            </if>
+            <if test=" params.danganBeizhuContent != '' and params.danganBeizhuContent != null and params.danganBeizhuContent != 'null' ">
+                and a.dangan_beizhu_content like CONCAT('%',#{params.danganBeizhuContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+            <if test="params.updateTime != null and params.updateTime != ''">
+                and a.update_time = #{params.updateTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

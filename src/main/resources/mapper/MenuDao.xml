@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.MenuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.role_zh_name as roleZhName
+        ,a.role_en_name as roleEnName
+        ,a.direction as direction
+        ,a.yiji_menu_name as yijiMenuName
+        ,a.yiji_menu_icon as yijiMenuIcon
+        ,a.erji_menu as erjiMenu
+        ,a.beizhu as beizhu
+        ,a.insert_time as insertTime
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.MenuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM menu  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.roleZhName != '' and params.roleZhName != null and params.roleZhName != 'null' ">
+                and a.role_zh_name like CONCAT('%',#{params.roleZhName},'%')
+            </if>
+            <if test=" params.roleEnName != '' and params.roleEnName != null and params.roleEnName != 'null' ">
+                and a.role_en_name like CONCAT('%',#{params.roleEnName},'%')
+            </if>
+            <if test=" params.direction != '' and params.direction != null and params.direction != 'null' ">
+                and a.direction like CONCAT('%',#{params.direction},'%')
+            </if>
+            <if test=" params.yijiMenuName != '' and params.yijiMenuName != null and params.yijiMenuName != 'null' ">
+                and a.yiji_menu_name like CONCAT('%',#{params.yijiMenuName},'%')
+            </if>
+            <if test=" params.yijiMenuIcon != '' and params.yijiMenuIcon != null and params.yijiMenuIcon != 'null' ">
+                and a.yiji_menu_icon like CONCAT('%',#{params.yijiMenuIcon},'%')
+            </if>
+            <if test=" params.erjiMenu != '' and params.erjiMenu != null and params.erjiMenu != 'null' ">
+                and a.erji_menu like CONCAT('%',#{params.erjiMenu},'%')
+            </if>
+            <if test=" params.beizhu != '' and params.beizhu != null and params.beizhu != 'null' ">
+                and a.beizhu like CONCAT('%',#{params.beizhu},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+            <if test="params.updateTime != null and params.updateTime != ''">
+                and a.update_time = #{params.updateTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
